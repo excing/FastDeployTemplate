@@ -46,8 +46,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
-          cache-dependency-path: ${{ runner.temp }}/quartz-engine/package-lock.json
 
       - name: Install Quartz Dependencies
         run: npm ci
@@ -72,15 +70,15 @@ jobs:
             BASE_PATH="/"
           fi
           # -d 指定内容源目录为工作区根目录
-          # -o 指定编译静态文件输出目录
+          # -o 指定编译静态文件输出目录到工作区 public
           # --baseDir 适配 GitHub Pages 仓库子路径
-          npx quartz build -d "$GITHUB_WORKSPACE" -o "${{ runner.temp }}/quartz-engine/public" --baseDir "$BASE_PATH"
+          npx quartz build -d "$GITHUB_WORKSPACE" -o "$GITHUB_WORKSPACE/public" --baseDir "$BASE_PATH"
         working-directory: ${{ runner.temp }}/quartz-engine
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ runner.temp }}/quartz-engine/public
+          path: public
 
   deploy:
     needs: build
