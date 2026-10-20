@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: jackyzha0/quartz
-          ref: v4
+          ref: v5
           path: .quartz-engine
 
       - name: Relocate Engine to Temp Directory
@@ -53,7 +53,8 @@ jobs:
 
       - name: Prepare Content & Config
         run: |
-          # 若工作区根目录提供了自定义 Quartz 配置文件，则覆盖默认配置
+          # 若工作区根目录提供了自定义 Quartz 配置文件，则覆盖默认配置 (v5 默认采用 yaml 配置)
+          [ -f "$GITHUB_WORKSPACE/quartz.config.yaml" ] && cp "$GITHUB_WORKSPACE/quartz.config.yaml" "${{ runner.temp }}/quartz-engine/quartz.config.yaml"
           [ -f "$GITHUB_WORKSPACE/quartz.config.ts" ] && cp "$GITHUB_WORKSPACE/quartz.config.ts" "${{ runner.temp }}/quartz-engine/quartz.config.ts"
           [ -f "$GITHUB_WORKSPACE/quartz.layout.ts" ] && cp "$GITHUB_WORKSPACE/quartz.layout.ts" "${{ runner.temp }}/quartz-engine/quartz.layout.ts"
 
@@ -62,6 +63,10 @@ jobs:
             echo "index.md not found, creating from README.md"
             cp "$GITHUB_WORKSPACE/README.md" "$GITHUB_WORKSPACE/index.md"
           fi
+
+      - name: Install Quartz Plugins
+        run: npx quartz plugin install
+        working-directory: ${{ runner.temp }}/quartz-engine
 
       - name: Build Quartz Site
         run: |
