@@ -1,2 +1,27 @@
 # FastDeployTemplate
-A streamlined GitHub Actions template designed to accelerate your journey from drafting to deploying on the website.
+
+<p align="center">
+  <img src="./static/logo.png" alt="FastDeploy Logo" width="120" height="120" />
+</p>
+
+A streamlined GitHub Actions template powered by **Quartz v5**, designed to accelerate your journey from drafting Markdown notes to deploying a modern digital garden on GitHub Pages.
+
+---
+
+## 特性 (Features)
+
+- 🚀 **开箱即用**：无需手动安装复杂环境，基于 GitHub Actions 全自动构建并部署至 GitHub Pages。
+- ⚙️ **Quartz v5 驱动**：支持双向链接、交互式图谱（Graph View）、全文检索与 Obsidian Markdown 语法。
+- 📂 **根目录作为内容源**：直接在仓库中编写 Markdown 笔记，无需多层嵌套。
+- 🎨 **高度可定制**：通过根目录下的 `quartz.config.yaml` 自定义站点名称与链接，通过 `custom.scss` 定制主题样式。
+- 🖼️ **品牌资产支持**：支持自定义站点图标（`icon.png`）与 Header Logo（`static/logo.png`）。
+
+---
+
+## 配置文件说明 (Configuration)
+
+- [`quartz.config.yaml`](./quartz.config.yaml)：站点基础信息（名称、语言、Base URL）及插件列表。
+- [`custom.scss`](./custom.scss)：自定义样式（包括页面标题 Logo 注入）。
+- [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)：GitHub Actions 自动化构建部署流。
+- [`icon.png`](./icon.png) / [`static/logo.png`](./static/logo.png)：站点 Favicon 与 Logo 图标。
+

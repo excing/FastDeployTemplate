@@ -1,0 +1,40 @@
+configuration:
+  pageTitle: "FastDeploy"
+  pageTitleSuffix: " | FastDeploy"
+  baseUrl: "excing.github.io/FastDeployTemplate"
+  locale: "zh-CN"
+  defaultDateType: "modified"
+  enableSPA: true
+  enablePopovers: true
+
+plugins:
+  - source: "@quartz-community/page-title"
+    enabled: true
+
+  - source: "@quartz-community/favicon"
+    enabled: true
+
+  - source: "@quartz-community/footer"
+    enabled: true
+    options:
+      links:
+        GitHub: "https://github.com/excing/FastDeployTemplate"
+        Issues: "https://github.com/excing/FastDeployTemplate/issues"
+    layout:
+      position: footer
+      priority: 50
+
+  - source: "@quartz-community/obsidian-flavored-markdown"
+    enabled: true
+
+  - source: "@quartz-community/explorer"
+    enabled: true
+
+  - source: "@quartz-community/graph"
+    enabled: true
+
+  - source: "@quartz-community/search"
+    enabled: true
+
+  - source: "@quartz-community/table-of-contents"
+    enabled: true
