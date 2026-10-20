@@ -20,8 +20,15 @@ A streamlined GitHub Actions template powered by **Quartz v5**, designed to acce
 
 ## 配置文件说明 (Configuration)
 
-- [`quartz.config.yaml`](./quartz.config.yaml)：站点基础信息（名称、语言、Base URL）及插件列表。
+- [`quartz.config.yaml`](./quartz.config.yaml)：**完整**站点配置（名称、语言、Base URL、主题与插件）。
+  > ⚠️ Quartz v5 会用该文件整体替换引擎自带的默认配置，不会做合并。请勿删除 `configuration.theme`、`configuration.ignorePatterns`，以及 `content-page` / `folder-page` / `tag-page` 等核心插件，否则构建会报错或只生成 404 页面。
 - [`custom.scss`](./custom.scss)：自定义样式（包括页面标题 Logo 注入）。
 - [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)：GitHub Actions 自动化构建部署流。
 - [`icon.png`](./icon.png) / [`static/logo.png`](./static/logo.png)：站点 Favicon 与 Logo 图标。
+
+## 常见问题 (Troubleshooting)
+
+### `Cannot read properties of undefined (reading 'fontOrigin')`
+
+`quartz.config.yaml` 缺少 `configuration.theme` 块。v5 的 YAML 配置是整体替换而非与默认值合并，因此 `theme`（含 `fontOrigin`、`cdnCaching`、`typography`、`colors`）必须显式书写。补齐后若出现 `cfg.configuration.ignorePatterns is not iterable`，同理补上 `ignorePatterns: []` 或具体排除项。
 
