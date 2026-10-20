@@ -58,14 +58,35 @@ jobs:
           [ -f "$GITHUB_WORKSPACE/quartz.config.ts" ] && cp "$GITHUB_WORKSPACE/quartz.config.ts" "${{ runner.temp }}/quartz-engine/quartz.config.ts"
           [ -f "$GITHUB_WORKSPACE/quartz.layout.ts" ] && cp "$GITHUB_WORKSPACE/quartz.layout.ts" "${{ runner.temp }}/quartz-engine/quartz.layout.ts"
 
-          # 同步站点图标与自定义样式：
-          # logo.png 作为 favicon 源复制为引擎的 static/icon.png（Quartz 据此生成 favicon.ico），
-          # 同时由内容目录原样发布到 /logo.png，供 custom.scss 的 Header Logo 使用。
-          if [ -f "$GITHUB_WORKSPACE/logo.png" ]; then
+          # Logo：支持 logo.svg（优先）或 logo.png，二选一即可。
+          # Header 直接使用源文件；favicon 仍需要 PNG，因此 SVG 会用引擎自带的
+          # sharp 渲染一份 logo.png（供 README 展示）和 static/icon.png（供 favicon）。
+          LOGO_URL=""
+          if [ -f "$GITHUB_WORKSPACE/logo.svg" ]; then
+            LOGO_URL="./logo.svg"
+            (cd "${{ runner.temp }}/quartz-engine" && node --input-type=module -e '
+              import sharp from "sharp"
+              const [src, outPng, outIcon] = process.argv.slice(1)
+              const render = (size) =>
+                sharp(src).resize(size, size, {
+                  fit: "contain",
+                  background: { r: 0, g: 0, b: 0, alpha: 0 },
+                }).png()
+              await render(512).toFile(outPng)
+              await render(128).toFile(outIcon)
+            ' "$GITHUB_WORKSPACE/logo.svg" "$GITHUB_WORKSPACE/logo.png" "${{ runner.temp }}/quartz-engine/quartz/static/icon.png")
+          elif [ -f "$GITHUB_WORKSPACE/logo.png" ]; then
+            LOGO_URL="./logo.png"
             cp "$GITHUB_WORKSPACE/logo.png" "${{ runner.temp }}/quartz-engine/quartz/static/icon.png"
+          else
+            echo "::warning::No logo.svg or logo.png found in the repository root."
           fi
+
           if [ -f "$GITHUB_WORKSPACE/custom.scss" ]; then
             cp "$GITHUB_WORKSPACE/custom.scss" "${{ runner.temp }}/quartz-engine/quartz/styles/custom.scss"
+            if [ -n "$LOGO_URL" ]; then
+              printf '\n:root { --logo-image: url("%s"); }\n' "$LOGO_URL" >> "${{ runner.temp }}/quartz-engine/quartz/styles/custom.scss"
+            fi
           fi
 
           # Quartz 默认以 index.md 为首页，若根目录不存在 index.md 且存在 README.md，则临时复制一份作为首页

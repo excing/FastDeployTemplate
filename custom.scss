@@ -9,7 +9,10 @@
     display: inline-block;
     width: 28px;
     height: 28px;
-    background: url("./logo.png") no-repeat center / contain;
+    background-image: var(--logo-image, url("./logo.png"));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
     flex-shrink: 0;
   }
 }
