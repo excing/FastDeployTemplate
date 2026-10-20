@@ -58,6 +58,20 @@ jobs:
           [ -f "$GITHUB_WORKSPACE/quartz.config.ts" ] && cp "$GITHUB_WORKSPACE/quartz.config.ts" "${{ runner.temp }}/quartz-engine/quartz.config.ts"
           [ -f "$GITHUB_WORKSPACE/quartz.layout.ts" ] && cp "$GITHUB_WORKSPACE/quartz.layout.ts" "${{ runner.temp }}/quartz-engine/quartz.layout.ts"
 
+          # 同步自定义静态资源与站点图标 (icon.png / static / custom.scss)
+          mkdir -p "${{ runner.temp }}/quartz-engine/quartz/static"
+          if [ -d "$GITHUB_WORKSPACE/quartz/static" ]; then
+            cp -r "$GITHUB_WORKSPACE/quartz/static/." "${{ runner.temp }}/quartz-engine/quartz/static/"
+          elif [ -d "$GITHUB_WORKSPACE/static" ]; then
+            cp -r "$GITHUB_WORKSPACE/static/." "${{ runner.temp }}/quartz-engine/quartz/static/"
+          fi
+          if [ -f "$GITHUB_WORKSPACE/icon.png" ]; then
+            cp "$GITHUB_WORKSPACE/icon.png" "${{ runner.temp }}/quartz-engine/quartz/static/icon.png"
+          fi
+          if [ -f "$GITHUB_WORKSPACE/custom.scss" ]; then
+            cp "$GITHUB_WORKSPACE/custom.scss" "${{ runner.temp }}/quartz-engine/quartz/styles/custom.scss"
+          fi
+
           # Quartz 默认以 index.md 为首页，若根目录不存在 index.md 且存在 README.md，则临时复制一份作为首页
           if [ ! -f "$GITHUB_WORKSPACE/index.md" ] && [ -f "$GITHUB_WORKSPACE/README.md" ]; then
             echo "index.md not found, creating from README.md"
