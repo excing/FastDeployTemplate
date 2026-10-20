@@ -1,0 +1,94 @@
+name: Deploy Quartz Site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，允许部署到 GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 限制并发部署，防止多个部署冲突
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Content
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整 Git 历史以生成精准的文件创建与修改时间
+
+      - name: Setup GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Checkout Quartz Engine
+        uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v4
+          path: .quartz-engine
+
+      - name: Relocate Engine to Temp Directory
+        run: |
+          # 将构建引擎移至临时目录，避免内容源目录发生递归扫描或受到引擎文件干扰
+          mv .quartz-engine "${{ runner.temp }}/quartz-engine"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: ${{ runner.temp }}/quartz-engine/package-lock.json
+
+      - name: Install Quartz Dependencies
+        run: npm ci
+        working-directory: ${{ runner.temp }}/quartz-engine
+
+      - name: Prepare Content & Config
+        run: |
+          # 若工作区根目录提供了自定义 Quartz 配置文件，则覆盖默认配置
+          [ -f "$GITHUB_WORKSPACE/quartz.config.ts" ] && cp "$GITHUB_WORKSPACE/quartz.config.ts" "${{ runner.temp }}/quartz-engine/quartz.config.ts"
+          [ -f "$GITHUB_WORKSPACE/quartz.layout.ts" ] && cp "$GITHUB_WORKSPACE/quartz.layout.ts" "${{ runner.temp }}/quartz-engine/quartz.layout.ts"
+
+          # Quartz 默认以 index.md 为首页，若根目录不存在 index.md 且存在 README.md，则临时复制一份作为首页
+          if [ ! -f "$GITHUB_WORKSPACE/index.md" ] && [ -f "$GITHUB_WORKSPACE/README.md" ]; then
+            echo "index.md not found, creating from README.md"
+            cp "$GITHUB_WORKSPACE/README.md" "$GITHUB_WORKSPACE/index.md"
+          fi
+
+      - name: Build Quartz Site
+        run: |
+          BASE_PATH="${{ steps.pages.outputs.base_path }}"
+          if [ -z "$BASE_PATH" ]; then
+            BASE_PATH="/"
+          fi
+          # -d 指定内容源目录为工作区根目录
+          # -o 指定编译静态文件输出目录
+          # --baseDir 适配 GitHub Pages 仓库子路径
+          npx quartz build -d "$GITHUB_WORKSPACE" -o "${{ runner.temp }}/quartz-engine/public" --baseDir "$BASE_PATH"
+        working-directory: ${{ runner.temp }}/quartz-engine
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/quartz-engine/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
