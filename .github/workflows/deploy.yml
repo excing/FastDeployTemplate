@@ -58,13 +58,9 @@ jobs:
           [ -f "$GITHUB_WORKSPACE/quartz.config.ts" ] && cp "$GITHUB_WORKSPACE/quartz.config.ts" "${{ runner.temp }}/quartz-engine/quartz.config.ts"
           [ -f "$GITHUB_WORKSPACE/quartz.layout.ts" ] && cp "$GITHUB_WORKSPACE/quartz.layout.ts" "${{ runner.temp }}/quartz-engine/quartz.layout.ts"
 
-          # 同步自定义静态资源与站点图标 (icon.png / static / custom.scss)
-          mkdir -p "${{ runner.temp }}/quartz-engine/quartz/static"
-          if [ -d "$GITHUB_WORKSPACE/quartz/static" ]; then
-            cp -r "$GITHUB_WORKSPACE/quartz/static/." "${{ runner.temp }}/quartz-engine/quartz/static/"
-          elif [ -d "$GITHUB_WORKSPACE/static" ]; then
-            cp -r "$GITHUB_WORKSPACE/static/." "${{ runner.temp }}/quartz-engine/quartz/static/"
-          fi
+          # 同步站点图标与自定义样式：
+          # icon.png 既作为 favicon 源（Quartz 会生成 favicon.ico），
+          # 也由内容目录原样发布，供 custom.scss 的 Header Logo 使用。
           if [ -f "$GITHUB_WORKSPACE/icon.png" ]; then
             cp "$GITHUB_WORKSPACE/icon.png" "${{ runner.temp }}/quartz-engine/quartz/static/icon.png"
           fi
