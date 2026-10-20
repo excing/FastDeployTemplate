@@ -1,7 +1,7 @@
 # FastDeployTemplate
 
 <p align="center">
-  <img src="./icon.png" alt="FastDeploy Logo" width="120" height="120" />
+  <img src="./logo.png" alt="FastDeploy Logo" width="120" height="120" />
 </p>
 
 A streamlined GitHub Actions template powered by **Quartz v5**, designed to accelerate your journey from drafting Markdown notes to deploying a modern digital garden on GitHub Pages.
@@ -14,7 +14,7 @@ A streamlined GitHub Actions template powered by **Quartz v5**, designed to acce
 - ⚙️ **Quartz v5 驱动**：支持双向链接、交互式图谱（Graph View）、全文检索与 Obsidian Markdown 语法。
 - 📂 **根目录作为内容源**：直接在仓库中编写 Markdown 笔记，无需多层嵌套。
 - 🎨 **高度可定制**：通过根目录下的 `quartz.config.yaml` 自定义站点名称与链接，通过 `custom.scss` 定制主题样式。
-- 🖼️ **品牌资产支持**：站点图标与 Header Logo 统一使用根目录的 `icon.png`（128×128），无需额外静态资源目录。
+- 🖼️ **品牌资产支持**：站点图标与 Header Logo 统一使用根目录的 `logo.png`（128×128），无需额外静态资源目录。
 
 ---
 
@@ -24,7 +24,7 @@ A streamlined GitHub Actions template powered by **Quartz v5**, designed to acce
   > ⚠️ Quartz v5 会用该文件整体替换引擎自带的默认配置，不会做合并。请勿删除 `configuration.theme`、`configuration.ignorePatterns`，以及 `content-page` / `folder-page` / `tag-page` 等核心插件，否则构建会报错或只生成 404 页面。
 - [`custom.scss`](./custom.scss)：自定义样式（包括页面标题 Logo 注入）。
 - [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)：GitHub Actions 自动化构建部署流。
-- [`icon.png`](./icon.png)：站点 Favicon 与 Header Logo（128×128，构建时同时生成 `favicon.ico`）。
+- [`logo.png`](./logo.png)：站点 Favicon 与 Header Logo（128×128，构建时同时生成 `favicon.ico`）。
 
 ## 常见问题 (Troubleshooting)
 
